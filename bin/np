@@ -1,0 +1,51 @@
+#!/bin/bash
+# Create a new blog post using Hugo archetypes
+# Usage: np <type> <slug>
+# Example: np post my-new-post
+#          np album ok-computer-review
+
+PROJECT_DIR="/Users/tiagojct/Github/deteritus.com"
+TYPES="post quote link photo album movie book"
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: np <type> <slug>"
+    echo "Types: $TYPES"
+    echo ""
+    echo "Examples:"
+    echo "  np post my-thoughts"
+    echo "  np quote sagan-on-books"
+    echo "  np link interesting-article"
+    echo "  np album ok-computer-review"
+    echo "  np movie parasite-review"
+    echo "  np book slaughterhouse-five"
+    exit 1
+fi
+
+TYPE=$1
+SLUG=$2
+DATE=$(date +%Y-%m-%d)
+FILENAME="content/blog/${DATE}_${SLUG}.md"
+FULL_PATH="${PROJECT_DIR}/${FILENAME}"
+
+# Check if type is valid
+if [[ ! " $TYPES " =~ " $TYPE " ]]; then
+    echo "Error: Invalid type '$TYPE'"
+    echo "Valid types: $TYPES"
+    exit 1
+fi
+
+# Change to project directory
+cd "$PROJECT_DIR" || { echo "Error: Cannot access $PROJECT_DIR"; exit 1; }
+
+# Create the post
+hugo new --kind "$TYPE" "blog/${DATE}_${SLUG}.md" 2>/dev/null
+
+if [ $? -eq 0 ]; then
+    # Insert the slug into frontmatter
+    sed -i '' "s/^slug: \"\"/slug: \"${SLUG}\"/" "$FILENAME"
+
+    echo "Created: $FILENAME"
+
+    # Open with CotEditor
+    cot "$FULL_PATH"
+fi
