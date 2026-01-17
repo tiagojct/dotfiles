@@ -45,7 +45,20 @@ if [ $? -eq 0 ]; then
     sed -i '' "s/^slug: \"\"/slug: \"${SLUG}\"/" "$FILENAME"
 
     echo "Created: $FILENAME"
+    echo ""
+    echo "Open with:"
+    echo "  1) CotEditor"
+    echo "  2) Zed"
+    echo "  3) Nano"
+    echo "  4) Don't open"
+    echo ""
+    read -p "Choose [1-4]: " choice
 
-    # Open with CotEditor
-    cot "$FULL_PATH"
+    case $choice in
+        1) cot "$FULL_PATH" ;;
+        2) zed "$FULL_PATH" ;;
+        3) nano "$FULL_PATH" ;;
+        4) echo "File ready at: $FULL_PATH" ;;
+        *) echo "Invalid choice, not opening" ;;
+    esac
 fi
